@@ -1,0 +1,179 @@
+﻿@page "/Activities"
+@using Newtonsoft.Json;
+@using System.Text;
+@using TeamBuilderAPI.DTOs;
+
+<h1 style="color: #6f42c1; font-size: 50px;"><b>Here are the activities and restaurants we suggest:</b></h1>
+<br />
+<h2 style="color: #6f42c1; font-size: 40px;"><b>Activities:</b></h2>
+<br />
+@foreach (var item in eventCentre)
+{
+    <div style="border: 2px solid #6f42c1; border-radius: 8px; padding: 10px; margin-bottom: 20px;">
+        <h4 style="font-weight: bold;">@item.CentreName</h4>
+        <p style="margin: 0;">Capacity: @item.Capacity</p>
+        <p style="margin: 0;">Location: @item.Address</p>
+    </div>
+}
+
+<h2 style="color: #6f42c1; font-size: 30px;"><b>Restaurants:</b></h2>
+<br />
+@foreach (var item in restaurant)
+{
+    <div style="border: 2px solid #6f42c1; border-radius: 8px; padding: 10px; margin-bottom: 20px;">
+        <h4 style="font-weight: bold;">@item.RestaurantName</h4>
+        <p style="margin: 0;">Capacity: @item.Capacity</p>
+        <p style="margin: 0;">Location: @item.Location</p>
+    </div>
+}
+
+<br />
+<br />
+<button style="background-color: #6f42c1; color: #fff; border: none; border-radius: 4px; padding: 8px 16px;" @onclick="ViewInfoE">View additional information about the event centres</button>
+@if (viewInfoE)
+{
+    <div>
+        <h4 style="color: #6f42c1; font-size: 25px;">Carting Sky Cart</h4>
+        <p style="border: 2px solid #6f42c1; border-radius: 8px; padding: 10px; margin-bottom: 20px;">Embarking on a go-karting adventure with your co-workers promises an unforgettable and joyous experience. The sheer excitement of zooming around the track, maneuvering sharp turns, and engaging in spirited races creates a dynamic atmosphere that strengthens the bonds among colleagues. As you compete for the top spot, laughter and cheers fill the air, fostering a sense of camaraderie and teamwork. The shared adrenaline rush and friendly banter that ensues during breaks amplify the thrill, creating lasting memories and inside jokes that will undoubtedly be cherished long after the helmets are off.</p>
+    </div>
+    <div>
+        <h4 style="color: #6f42c1; font-size: 25px;">Kayak Rental - Matka</h4>
+        <p style="border: 2px solid #6f42c1; border-radius: 8px; padding: 10px; margin-bottom: 20px;">Embarking on a kayaking adventure with your co-workers offers a delightful and invigorating experience that brings together the beauty of nature and the joy of teamwork. Paddling through serene waters, surrounded by breathtaking landscapes, instills a sense of tranquility and wonderment, creating a perfect setting for bonding and shared experiences. As you navigate the gentle currents and conquer small rapids together, communication and coordination become essential, fostering collaboration and trust among colleagues. Moments of laughter and excitement arise as you cheer each other on, overcome challenges, and celebrate accomplishments. The peacefulness of the surroundings, combined with the shared exhilaration of paddling in unison, creates a unique and unforgettable experience that strengthens the connections within the team.</p>
+    </div>
+    <div>
+        <h4 style="color: #6f42c1; font-size: 25px;">Paintball Arena BEST</h4>
+        <p style ="border: 2px solid #6f42c1; border-radius: 8px; padding: 10px; margin-bottom: 20px;">Engaging in a paintball session with your co-workers promises an action-packed and thrilling adventure that ignites the spirit of friendly competition and teamwork. As you don your protective gear and enter the vibrant battleground, adrenaline courses through your veins. Strategizing and communicating with your team members become paramount as you navigate through obstacles, plan tactical maneuvers, and execute well-coordinated attacks on your opponents. The bursts of colorful paint and the exhilarating rush of dodging and ducking intensify the experience, creating moments of heart-pounding excitement and laughter. Through teamwork and strategic planning, you forge stronger bonds with your co-workers, developing a deeper sense of trust and camaraderie. The shared triumphs and occasional good-natured rivalries become treasured memories, fostering a positive and enjoyable work environment long after the paintball session has ended.</p>
+    </div>
+}
+
+<br />
+<button style="background-color: #6f42c1; color: #fff; border: none; border-radius: 4px; padding: 8px 16px;" @onclick="ShowRestaurants">View/Hide Restaurant Map</button>
+@if (showRestaurants)
+{
+    <div id="restaurant1">
+        <h6>Gostilnica Dukat</h6>
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2965.246866581955!2d21.40806528596215!3d41.994977197045706!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x135414387c7dc3c7%3A0x29197746d3e9ceff!2zR29zdGlsbmljYSDigJ5EdWthdOKAnA!5e0!3m2!1sen!2smk!4v1684157067148!5m2!1sen!2smk" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+    <br />
+    <div id="restaurant1">
+        <h6>Dva Elena</h6>
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2965.3409511722416!2d21.40530097602667!3d41.99295777122939!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1354143edaf71d6b%3A0x7bbd684eadc5a52d!2sRestaurant%20Dva%20%D0%95lena!5e0!3m2!1sen!2smk!4v1684157090001!5m2!1sen!2smk" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+    <br />
+    <div id="restaurant1">
+        <h6>Makedonska Kuka</h6>
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2965.198091501676!2d21.39960677602683!3d41.996024071229044!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x135414151547db45%3A0x45ee59994a67549a!2sNational%20Restaurant%20%E2%80%9EMakedonska%20Kukja%E2%80%9C!5e0!3m2!1sen!2smk!4v1684157117500!5m2!1sen!2smk" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+    <br />
+    <br />
+}
+<br/>
+<button style="background-color: #6f42c1; color: #fff; border: none; border-radius: 4px; padding: 8px 16px;" @onclick="ShowActivities">View/Hide Activitiy Map</button>
+@if (showActivities)
+{
+    <div id="activity1" style="width: 400px; height: 300px;">
+        <h6>Carting Sky Cart</h6>
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d370.3860750579484!2d21.352863472823117!3d42.04128040245922!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1354136251f8c165%3A0x5352f714f6fcdfa!2z0KHQutCw0Zgg0JrQsNGA0YI!5e0!3m2!1sen!2smk!4v1684156386289!5m2!1sen!2smk" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+    <br />
+    <div id="activity2" style="width: 400px; height: 300px;">
+        <h6>Kayak Rental - Matka</h6>
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1483.6151268309122!2d21.29740804847562!3d41.95238914735565!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x135410306795e291%3A0x9c0e16d89d5122fc!2sLake%20Matka!5e0!3m2!1sen!2smk!4v1684156525944!5m2!1sen!2smk" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+    <br />
+    <div id="activity3" style="width: 400px; height: 300px;">
+        <h6>Paintball Arena BEST</h6>
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1484.045540217636!2d21.516068078992195!3d41.933894182379966!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x13543db426caa31f%3A0x6f860676f30a195f!2z0IjRg9GB0YLQuNC90LjRmNCw0L0g0J_RgNCy0LgsIERyYWNoZXZv!5e0!3m2!1sen!2smk!4v1684156562742!5m2!1sen!2smk" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+    <br />
+}
+
+<br />
+<br />
+<br/>
+<br/>
+<br/>
+
+
+@code {
+    bool showActivities = false;
+    bool showRestaurants = false;
+    bool viewInfoE = false;
+    bool viewInfoR = false;
+
+    public RestaurantDTO Restaurant { get; set; }
+    public EventCentreDTO EventCentre { get; set; }
+
+    public List<EventCentreDTO> eventCentre { get; set; } = new List<EventCentreDTO>();
+    public List<RestaurantDTO> restaurant { get; set; } = new List<RestaurantDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitializedAsync();
+        await HandleActivities();
+        await HandleRestaurants();
+    }
+
+    private async Task HandleActivities()
+    {
+        var jsonContent = JsonConvert.SerializeObject(EventCentre);
+        var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+        using var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri("https://localhost:7064/EventCentre");
+
+        var response = await httpClient.GetAsync("eventCentre");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var eventCentreContent = await response.Content.ReadAsStringAsync();
+            eventCentre = JsonConvert.DeserializeObject<List<EventCentreDTO>>(eventCentreContent);
+        }
+        else
+        {
+        }
+    }
+
+    private async Task HandleRestaurants()
+    {
+        var jsonContent = JsonConvert.SerializeObject(Restaurant);
+        var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+        using var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri("https://localhost:7064/Restaurant");
+
+        var response = await httpClient.GetAsync("restaurant");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var restaurantContent = await response.Content.ReadAsStringAsync();
+            restaurant = JsonConvert.DeserializeObject<List<RestaurantDTO>>(restaurantContent);
+        }
+        else
+        {
+        }
+    }
+
+    void ShowActivities()
+    {
+        showActivities = !showActivities;
+        StateHasChanged();
+    }
+    void ShowRestaurants()
+    {
+        showRestaurants = !showRestaurants;
+        StateHasChanged();
+    }
+    void ViewInfoE()
+    {
+        viewInfoE = !viewInfoE;
+        StateHasChanged();
+    }
+    void ViewInfoR()
+    {
+        viewInfoR = !viewInfoR;
+        StateHasChanged();
+    }
+
+
+}

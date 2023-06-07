@@ -1,0 +1,168 @@
+﻿@page "/BookTeamBuilding/{id}"
+@using TeamBuilderAPI.DTOs;
+@using Newtonsoft.Json;
+@using System.Text;
+@using Newtonsoft.Json;
+@using System.Text;
+@using TeamBuilderAPI.DTOs;
+@using System;
+@using TeamBuilder.Domain.DTOs;
+
+<h3 style="text-align: center; color: #6f42c1; font-size: 50px;"><b>Time to have some fun</b></h3>
+
+<div style="margin-top: 20px;">
+    <button @onclick="RandomEventCentre" style="background-color: #6f42c1; color: #fff; border: none; border-radius: 4px; padding: 8px 16px; font-size: 16px;">Get Random Event Centre</button>
+</div>
+<br />
+@if (EventCentre != null)
+{
+    <p style="text-align: center; color: #6f42c1; font-size: 20px; border: 2px solid #6f42c1; padding: 10px; border-radius: 4px;">
+        Random Event Centre: @EventCentre.CentreName 🎉
+    </p>
+}
+
+<div style="margin-top: 20px;">
+    <button @onclick="RandomRestaurant" style="background-color: #6f42c1; color: #fff; border: none; border-radius: 4px; padding: 8px 16px; font-size: 16px;">Get Random Restaurant</button>
+</div>
+<br />
+
+@if (Restaurant != null)
+{
+    <p style="text-align: center; color: #6f42c1; font-size: 20px; border: 2px solid #6f42c1; padding: 10px; border-radius: 4px;">
+        Random Restaurant: @Restaurant.RestaurantName 🎉
+    </p>
+
+}
+<br />
+<button @onclick="BookNow" style="background-color: #6f42c1; color: #fff; border: none; border-radius: 4px; padding: 8px 16px; font-size: 16px;">Book</button>
+<br />
+<br />
+
+@code {
+    [Parameter] public string id { get; set; }
+
+    [Inject] NavigationManager NavigationManager { get; set; }
+
+    public CompanyDTO Company { get; set; }
+
+    public EventCentreDTO EventCentre { get; set; }
+
+    public RestaurantDTO Restaurant { get; set; }
+
+    public EmployeeDTO Employee { get; set; }
+
+    public List<CompanyDTO> companies = new List<CompanyDTO>();
+
+    public List<EventCentreDTO> eventCentre { get; set; } = new List<EventCentreDTO>();
+
+    public List<RestaurantDTO> restaurant { get; set; } = new List<RestaurantDTO>();
+
+    public List<EmployeeDTO> Employees = new List<EmployeeDTO>();
+
+    private static Random random = new Random();
+
+    public TeamBuildingDTO TeamBuilding { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetEvents();
+        await GetRestaurants();
+        //await GetCompanyId();
+        base.OnInitializedAsync();
+        
+    }
+
+    private async Task GetEvents()
+    {
+        var jsonContent = JsonConvert.SerializeObject(EventCentre);
+        var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+        using var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri("https://localhost:7064/EventCentre");
+
+        var response = await httpClient.GetAsync("eventCentre");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var eventCentreContent = await response.Content.ReadAsStringAsync();
+            eventCentre = JsonConvert.DeserializeObject<List<EventCentreDTO>>(eventCentreContent);
+        }
+        else
+        {
+        }
+    }
+
+    private async Task GetRestaurants()
+    {
+        var jsonContent = JsonConvert.SerializeObject(Restaurant);
+        var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+        using var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri("https://localhost:7064/Restaurant");
+
+        var response = await httpClient.GetAsync("restaurant");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var restaurantContent = await response.Content.ReadAsStringAsync();
+            restaurant = JsonConvert.DeserializeObject<List<RestaurantDTO>>(restaurantContent);
+        }
+        else
+        {
+        }
+    }
+
+    public void RandomEventCentre()
+    {
+        int count = eventCentre.Count;
+
+        int randomIndex = random.Next(0, count);
+        EventCentre = eventCentre[randomIndex];
+    }
+    public void RandomRestaurant()
+    {
+        int count = restaurant.Count;
+
+        int randomIndex = random.Next(0, count);
+        Restaurant = restaurant[randomIndex];
+    }
+
+    private async Task BookNow()
+    {
+        
+        var eventCentreId = EventCentre?.Id; 
+        var restaurantId = Restaurant.Id;
+        var description = "test";
+        DateTime activityDate = DateTime.Now;
+
+       
+            var postData = new
+            {
+            companyId = id,
+            eventCentreId = eventCentreId,
+            restaurantId = restaurantId,
+            description = description,
+            activityDate = activityDate
+            };
+
+            var jsonContent = JsonConvert.SerializeObject(postData);
+            var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+            using var httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri("https://localhost:7064");
+
+            var response = await httpClient.PostAsync("TeamBuilding", httpContent);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var teamBuildingContent = await response.Content.ReadAsStringAsync();
+                TeamBuilding = JsonConvert.DeserializeObject<TeamBuildingDTO>(teamBuildingContent);
+            }
+            else
+            {
+                
+            }
+      
+    }
+    
+}

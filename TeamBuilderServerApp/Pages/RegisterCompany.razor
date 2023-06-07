@@ -1,0 +1,83 @@
+﻿@page "/RegisterCompany"
+@using System.Text;
+@using TeamBuilderAPI.DTOs;
+@using Newtonsoft.Json;
+
+<div style="max-width: 400px; margin: 0 auto; background-color: #f5f5f5; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);">
+    <h2 style="text-align: center; color: #6f42c1; font-size: 24px;">Wo-hoo, a new company &#127866;</h2>
+    <br/>
+    <br/>
+    <br/>
+    <h3 style="text-align: center; color: #6f42c1; font-size: 18px;">Let's register your company:</h3>
+    <br/>
+    <br/>
+    <EditForm Model="@Company" OnValidSubmit="@HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div style="border: 2px solid #6f42c1; padding: 10px; border-radius: 4px; margin-bottom: 10px;">
+            <label for="companyName" style="color: #6f42c1; font-size: 16px;">Company Name:</label>
+            <InputText id="companyName" @bind-Value="Company.CompanyName" style="padding: 8px; border: none; border-bottom: 2px solid #6f42c1; width: 100%; box-sizing: border-box; font-size: 16px;" />
+            <ValidationMessage For="@(() => Company.CompanyName)" style="color: red; font-size: 12px;" />
+        </div>
+        <br/>
+        <div style="border: 2px solid #6f42c1; padding: 10px; border-radius: 4px; margin-bottom: 10px;">
+            <label for="numberOfEmployees" style="color: #6f42c1; font-size: 16px;">Number of Employees in the Company:</label>
+            <InputNumber id="numberOfEmployees" @bind-Value="@Company.NumberOfEmployees" style="padding: 8px; border: none; border-bottom: 2px solid #6f42c1; width: 100%; box-sizing: border-box; font-size: 16px;" />
+            <ValidationMessage For="@(() => Company.NumberOfEmployees)" style="color: red; font-size: 12px;" />
+        </div>
+        <br/>
+          <div style="border: 2px solid #6f42c1; padding: 10px; border-radius: 4px; margin-bottom: 10px;">
+            <label for="numberOfEmployees" style="color: #6f42c1; font-size: 16px;">Password:</label>
+            <InputText id="numberOfEmployees" @bind-Value="@Company.Password" type="password" style="padding: 8px; border: none; border-bottom: 2px solid #6f42c1; width: 100%; box-sizing: border-box; font-size: 16px;" />
+            <ValidationMessage For="@(() => Company.Password)" style="color: red; font-size: 12px;" />
+        </div>
+        <br/>
+        <div style="display: flex; justify-content: center;">
+            <button type="submit" style="background-color: #6f42c1; color: #fff; border: none; border-radius: 4px; padding: 8px 16px; font-size: 16px;" @onclick="HandleValidSubmit">Submit</button>
+        </div>
+    </EditForm>
+</div>
+
+
+@code {
+    public CompanyDTO Company { get; set; }
+
+    [Inject] NavigationManager NavigationManager { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        Company = new CompanyDTO();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        var jsonContent = JsonConvert.SerializeObject(Company);
+        var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+        using var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri("https://localhost:7064/");
+
+        var response = await httpClient.PostAsync("company", httpContent);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var company = await response.Content.ReadFromJsonAsync<CompanyDTO>();
+            NavigationManager.NavigateTo($"/CompanyProfile/{company.Id}");
+        }
+        else
+        {
+        }
+    }
+
+    //private void GoToFourthPage()
+    //{
+    //    NavigationManager.NavigateTo("/RegisterTeam");
+    //}
+}

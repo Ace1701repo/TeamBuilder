@@ -1,0 +1,61 @@
+﻿@page "/RegisterTeam"
+@using System.Text;
+@using TeamBuilderAPI.DTOs;
+@using Newtonsoft.Json;
+
+<h2>Wanna Register a Team?</h2>
+<h2>Ok let's do it!</h2>
+<br />
+<br />
+<br />
+<h3>Let's register your team:</h3>
+
+<br />
+
+<EditForm Model="@Team" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div>
+        <label for="teamName">Team Name:</label>
+        <InputText id="firstName" @bind-Value="@Team.TeamName" />
+        <ValidationMessage For="@(() => Team.TeamName)" />
+    </div>
+    <button type="submit" @onclick="HandleValidSubmit">Register Team</button>
+</EditForm>
+
+
+
+@code {
+    public TeamDTO Team { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        Team = new TeamDTO();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        var jsonContent = JsonConvert.SerializeObject(Team);
+        var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+        using var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri("https://localhost:7064/");
+
+        var response = await httpClient.PostAsync("team", httpContent);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var team = await response.Content.ReadFromJsonAsync<EmployeeDTO>();
+        }
+        else
+        {
+        }
+    }
+}

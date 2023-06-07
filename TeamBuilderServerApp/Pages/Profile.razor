@@ -1,0 +1,58 @@
+﻿@page "/Profile/{id}"
+@using TeamBuilderAPI.DTOs;
+@using Newtonsoft.Json;
+@using System.Text;
+
+
+<h1 style="text-align: center; color: #6f42c1; font-size: 50px;">Your Profile 🎉</h1>
+<h2 style="text-align: center; color: #6f42c1; font-size: 30px;">Welcome to your profile 🎉</h2>
+
+<br/>
+<br/>
+
+@if (Employee != null)
+{
+    <div style="margin-top: 20px;">
+        <h3 style="font-weight: bold; font-style: italic; color: #6f42c1; font-size: 25px;">First Name:</h3>
+        <h3 style="color: #6f42c1; font-size: 20px;">@Employee.FirstName</h3>
+    </div>
+    <div style="margin-top: 10px;">
+        <h3 style="font-weight: bold; font-style: italic; color: #6f42c1; font-size: 25px;">Last Name:</h3>
+        <h3 style="color: #6f42c1; font-size: 20px;">@Employee.LastName</h3>
+    </div>
+}
+
+
+
+@code {
+    [Parameter] public string id { get; set; }
+
+    public EmployeeDTO Employee { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            var jsonContent = JsonConvert.SerializeObject(Employee);
+            var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+            using var httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri("https://localhost:7064");
+
+            var response = await httpClient.GetAsync($"employee/{id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var employeeContent = await response.Content.ReadAsStringAsync();
+                Employee = JsonConvert.DeserializeObject<EmployeeDTO>(employeeContent);
+            }
+            else
+            {
+            }
+
+            StateHasChanged(); // za da go prerenderira html-ot
+        }
+        
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

@@ -1,0 +1,135 @@
+﻿@page "/RegisterEmployee"
+@using System.Text;
+@using TeamBuilderAPI.DTOs;
+@using Newtonsoft.Json;
+
+<div style="max-width: 400px; margin: 0 auto; background-color: #f5f5f5; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);">
+    <h2 style="text-align: center; color: #6f42c1; font-size: 24px;">Oh, a new employee.<br/> Great! <br/>Let's get you closer to your co-workers 😄</h2>
+    <br />
+    <br />
+    <br />
+    <h3 style="text-align: center; color: #6f42c1; font-size: 18px;"><b>Let's register you</b>:</h3>
+    <br />
+    <br />
+    <EditForm Model="@Employee" OnValidSubmit="@HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div style="display: flex; flex-direction: column;">
+            <label for="firstName" style="color: #6f42c1; font-size: 16px;"><b>First Name:</b></label>
+            <InputText id="firstName" @bind-Value="@Employee.FirstName" style="padding: 8px; border: 2px solid #6f42c1; border-radius: 4px; margin-bottom: 10px;" />
+            <ValidationMessage For="@(() => Employee.FirstName)" style="color: red; font-size: 12px;" />
+        </div>
+        <br />
+        <div style="display: flex; flex-direction: column;">
+            <label for="lastName" style="color: #6f42c1; font-size: 16px;"><b>Last Name:</b></label>
+            <InputText id="lastName" @bind-Value="@Employee.LastName" style="padding: 8px; border: 2px solid #6f42c1; border-radius: 4px; margin-bottom: 10px;" />
+            <ValidationMessage For="@(() => Employee.LastName)" style="color: red; font-size: 12px;" />
+        </div>
+        <br />
+        <div style="display: flex; flex-direction: column;">
+            <label for="username" style="color: #6f42c1; font-size: 16px;"><b>User Name:</b></label>
+            <InputText id="userName" @bind-Value="@Employee.UserName" style="padding: 8px; border: 2px solid #6f42c1; border-radius: 4px; margin-bottom: 10px;" />
+            <ValidationMessage For="@(() => Employee.UserName)" style="color: red; font-size: 12px;" />
+        </div>
+        <br />
+        <div style="display: flex; flex-direction: column;">
+            <label for="password" style="color: #6f42c1; font-size: 16px;"><b>Password:</b></label>
+            <InputText id="lastName" @bind-Value="@Employee.Password" type="password" style="padding: 8px; border: 2px solid #6f42c1; border-radius: 4px; margin-bottom: 10px;" />
+            <ValidationMessage For="@(() => Employee.Password)" style="color: red; font-size: 12px;" />
+        </div>
+        <div>
+            <label for="dropdown" style="color: #6f42c1; font-size: 16px;">Select a company:</label>
+            <select id="dropdown" @bind="@Company.Id" style="padding: 8px; border: 2px solid #6f42c1; border-radius: 4px; margin-bottom: 10px;">
+                @if (Companies?.Any() == true)
+                {
+                    @foreach (var option in Companies)
+                    {
+                        <option value="@option?.Id" style="padding: 8px; border: 2px solid #6f42c1; border-radius: 4px; margin-bottom: 10px;">@option?.CompanyName</option>
+                    }
+                }
+                else
+                {
+                    <option value="" style="padding: 8px; border: 2px solid #6f42c1; border-radius: 4px; margin-bottom: 10px;">Loading companies...</option>
+                }
+            </select>
+        </div>
+        <div style="display: flex; justify-content: center;">
+            <button type="submit" style="background-color: #6f42c1; color: #fff; border: none; border-radius: 4px; padding: 8px 16px; font-size: 16px;" @onclick="HandleValidSubmit" >Submit</button>
+        </div>
+    </EditForm>
+   
+</div>
+
+
+
+@code {
+    [Inject] NavigationManager NavigationManager { get; set; }
+
+    public EmployeeDTO Employee { get; set; }
+
+    public List<CompanyDTO> Companies = new List<CompanyDTO>();
+
+    public CompanyDTO Company { get; set; } = new CompanyDTO();
+
+    public Guid? CompanyId { get; set; } = new Guid();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        Employee = new EmployeeDTO();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetCompanies();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+    }
+
+    
+    private async Task HandleValidSubmit()
+    {
+        Employee.CompanyId = Company.Id; 
+
+        var jsonContent = JsonConvert.SerializeObject(Employee);
+        var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+        using var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri("https://localhost:7064");
+
+        var response = await httpClient.PostAsync("employee", httpContent);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var employee = await response.Content.ReadFromJsonAsync<EmployeeDTO>();
+            NavigationManager.NavigateTo($"/Profile/{employee.Id}");
+        }
+        else
+        {
+            // Handle the error case
+        }
+    }
+    private async Task GetCompanies()
+    {
+        using var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri("https://localhost:7064/");
+
+        var response = await httpClient.GetAsync("company");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var companyContent = await response.Content.ReadAsStringAsync();
+            Companies = JsonConvert.DeserializeObject<List<CompanyDTO>>(companyContent);
+        }
+        else
+        {
+        }
+    }
+
+
+
+}

@@ -1,0 +1,184 @@
+﻿@page "/CompanyProfile/{id}"
+@using TeamBuilderAPI.DTOs;
+@using Newtonsoft.Json;
+@using System.Text;
+@using Newtonsoft.Json;
+@using System.Text;
+@using TeamBuilderAPI.DTOs;
+@using System;
+
+<h3 style="text-align: center; color: #6f42c1; font-size: 50px;"><b>Company Profile 🎉</b></h3>
+
+<br />
+<br />
+
+    <div style="margin-top: 20px;">
+        <h3 style="font-weight: bold; font-style: italic; color: #6f42c1; font-size: 35px;"><b>Company Name:</b></h3>
+        <h3 style="color: #6f42c1; font-size: 20px;">@Company?.CompanyName</h3>
+    </div>
+    <div style="margin-top: 10px;">
+        <h3 style="font-weight: bold; font-style: italic; color: #6f42c1; font-size: 35px;"><b>Number of Employees:</b></h3>
+        <h3 style="color: #6f42c1; font-size: 20px;">@Company?.NumberOfEmployees</h3>
+    </div>
+
+<br/>
+<br/>
+<button @onclick="BookTeamBuilding" style="background-color: #6f42c1; color: #fff; border: none; border-radius: 4px; padding: 8px 16px; font-size: 16px;">Book Activity</button>
+@if (Employees.Count == 0)
+{
+    <h3 style="text-align: center; color: #6f42c1; font-size: 20px;">There are no registered employees in your company. &#128542;</h3>
+}
+else
+{
+    @foreach (var employee in Employees)
+    {
+        <h3 style="text-align: center; color: #6f42c1; font-size: 20px;"><b>Employees in your company:</b>@employee.FirstName @employee.LastName</h3>
+    }
+}
+
+<br />
+<br />
+<br />
+
+
+@code {
+    [Parameter] public string id { get; set; }
+
+    [Inject] NavigationManager NavigationManager { get; set; }
+
+    public CompanyDTO Company { get; set; }
+
+    public EventCentreDTO EventCentre { get; set; }
+
+    public RestaurantDTO Restaurant { get; set; }
+
+    public EmployeeDTO Employee { get; set; }
+
+    public List<CompanyDTO> companies = new List<CompanyDTO>();
+
+    public List<EventCentreDTO> eventCentre { get; set; } = new List<EventCentreDTO>();
+
+    public List<RestaurantDTO> restaurant { get; set; } = new List<RestaurantDTO>();
+
+    public List<EmployeeDTO> Employees = new List<EmployeeDTO>();
+
+    private static Random random = new Random();
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitializedAsync();
+        //await GetEvents();
+        //await GetRestaurants();
+        await ShowEmployees();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var jsonContent = JsonConvert.SerializeObject(Company);
+            var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+            using var httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri("https://localhost:7064");
+
+            var response = await httpClient.GetAsync($"company/{id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var companyContent = await response.Content.ReadAsStringAsync();
+                Company = JsonConvert.DeserializeObject<CompanyDTO>(companyContent);
+            }
+            else
+            {
+            }
+
+            StateHasChanged(); // za da go prerenderira html-ot
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    //private async Task GetEvents()
+    //{
+    //    var jsonContent = JsonConvert.SerializeObject(EventCentre);
+    //    var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+    //    using var httpClient = new HttpClient();
+    //    httpClient.BaseAddress = new Uri("https://localhost:7064/EventCentre");
+
+    //    var response = await httpClient.GetAsync("eventCentre");
+
+    //    if (response.IsSuccessStatusCode)
+    //    {
+    //        var eventCentreContent = await response.Content.ReadAsStringAsync();
+    //        eventCentre = JsonConvert.DeserializeObject<List<EventCentreDTO>>(eventCentreContent);
+    //    }
+    //    else
+    //    {
+    //    }
+    //}
+    //private async Task GetRestaurants()
+    //{
+    //    var jsonContent = JsonConvert.SerializeObject(Restaurant);
+    //    var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+    //    using var httpClient = new HttpClient();
+    //    httpClient.BaseAddress = new Uri("https://localhost:7064/Restaurant");
+
+    //    var response = await httpClient.GetAsync("restaurant");
+
+    //    if (response.IsSuccessStatusCode)
+    //    {
+    //        var restaurantContent = await response.Content.ReadAsStringAsync();
+    //        restaurant = JsonConvert.DeserializeObject<List<RestaurantDTO>>(restaurantContent);
+    //    }
+    //    else
+    //    {
+    //    }
+    //}
+
+    //public void RandomEventCentre()
+    //{
+    //    int count = eventCentre.Count;
+
+    //    int randomIndex = random.Next(0, count);
+    //    EventCentre = eventCentre[randomIndex];
+    //}
+    //public void RandomRestaurant()
+    //{
+    //    int count = restaurant.Count;
+
+    //    int randomIndex = random.Next(0, count);
+    //    Restaurant = restaurant[randomIndex];
+    //}
+
+    protected async Task ShowEmployees()
+    {
+        var jsonContent = JsonConvert.SerializeObject(Employee);
+        var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+        using var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri("https://localhost:7064");
+
+        var response = await httpClient.GetAsync($"/company/{id}/Employees");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var employeeContent = await response.Content.ReadAsStringAsync();
+            Employees = JsonConvert.DeserializeObject<List<EmployeeDTO>>(employeeContent);
+        }
+        else
+        {
+        }
+
+        StateHasChanged(); // za da go prerenderira html-ot
+
+    }
+
+    public void BookTeamBuilding()
+    {
+        NavigationManager.NavigateTo($"/BookTeamBuilding/{id}");
+    }
+    
+}

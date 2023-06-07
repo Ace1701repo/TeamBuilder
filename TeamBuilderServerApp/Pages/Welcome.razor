@@ -1,0 +1,53 @@
+﻿@page "/"
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Lists
+
+<div  style=" background: url(/Images/teamStart.png);
+    background-size: cover;
+    background-position: center;
+    width: 100vw;
+    height: 100vh;">
+    <img src="/Images/teamStart.png" alt="Photo" style="z-index: -1; position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+    <div class="text-overlay" style="position: center; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <h1 style="color: white; background-color: cornflowerblue;">Team Builder</h1>
+        <h2 style="color: white; background-color: cornflowerblue;">Welcome to the Team Builder! &#128101;</h2>
+        <h3 style="color: white; background-color: cornflowerblue;">Get ready to have some fun with your co-workers</h3>
+        <button @onclick="() => { GoToSecondPage(); }" style="background-color: white; color: blue;">Get Started →</button>
+        <button @onclick="() => { GoToLogIn(); }" style="background-color: white; color: blue;">Employee Log-in →</button>
+        <button @onclick="() => { GoToCompanyLogIn(); }" style="background-color: white; color: blue;">Company Log-in →</button>
+    </div>
+</div>
+
+
+
+<div class="background-image" style="display: flex; justify-content: center; align-items: center; height: 100vh; position: relative;">
+    <img src="/Images/peopleHavingFun.png" alt="Photo" style="z-index: 1;">
+    <button @onclick="() => {GoToCatalog(); }" style="position: absolute; z-index: 2;">See what activities we have for you</button>
+</div>
+
+
+
+@code {
+    [Inject] NavigationManager NavigationManager { get; set; }
+
+    private void GoToSecondPage()
+    {
+        NavigationManager.NavigateTo("/GetStarted");
+    }
+
+    private void GoToCatalog()
+    {
+        NavigationManager.NavigateTo("/Activities");
+    }
+   
+    private void GoToLogIn()
+    {
+        NavigationManager.NavigateTo("/LogIn");
+    }
+
+    private void GoToCompanyLogIn()
+    {
+        NavigationManager.NavigateTo("/CompanyLogIn");
+    }
+}
